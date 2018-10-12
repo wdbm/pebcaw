@@ -7,7 +7,7 @@ import setuptools
 def main():
     setuptools.setup(
         name             = "pebcaw",
-        version          = "2018.10.11.1426",
+        version          = "2018.10.12.0917",
         description      = "monitor internet connection security",
         long_description = long_description(),
         url              = "https://github.com/wdbm/pebcaw",

@@ -52,7 +52,7 @@ import textwrap
 import time
 
 name        = "PEBCAW"
-__version__ = "2018-10-11T1426Z"
+__version__ = "2018-10-12T0917Z"
 
 def main():
     options             = docopt.docopt(__doc__, version = __version__)
@@ -174,6 +174,7 @@ countries_SIGINT = [
     "US", "USA", "United States", "United States of America",
 ]
 IPs_AirVPN_2018_10_11 = [
+    "109.202.107.10",
     "213.152.161.181"
 ]
 IPs_AirVPN_2017_02_21 = [
