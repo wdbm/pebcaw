@@ -41,6 +41,7 @@ options:
     --interval=INT          observation interval (s) [default: 300]
     --warn_SIGINT_country   warn if IP in SIGINT country
     --display               display IP details continuously
+    --restart_regularly     restart program regularly
 """
 
 import docopt
@@ -48,28 +49,35 @@ import os
 import requests
 import shutil
 import subprocess
+import sys
 import textwrap
 import time
 
+import shijian
+
 name        = "PEBCAW"
-__version__ = "2018-10-12T0917Z"
+__version__ = "2018-10-14T1331Z"
 
 def main():
     options             = docopt.docopt(__doc__, version = __version__)
     interval            = int(options["--interval"])
     warn_SIGINT_country =     options["--warn_SIGINT_country"]
     display             =     options["--display"]
-    print("\n" + name + " monitoring internet connection security\n^c to stop\n")
+    restart_regularly   =     options["--restart_regularly"]
+    message             = name + " " + __version__ + " monitoring internet connection security"
+    print("\n" + message + "\n^c to stop\n")
+    notify(text = message)
+    clock_restart = shijian.Clock(name = "restart")
     while True:
         try:
-            data_IP         = requests.get("http://ipinfo.io/json").json()
-            IP              = data_IP["ip"]
-            organisation    = data_IP["org"]
-            hostname        = data_IP["hostname"]
-            coordinates     = data_IP["loc"]
-            city            = data_IP["city"]
-            country         = data_IP["country"]
-            region          = data_IP["region"]
+            data_IP      = requests.get("http://ipinfo.io/json").json()
+            IP           = data_IP["ip"]
+            organisation = data_IP["org"]
+            hostname     = data_IP["hostname"]
+            coordinates  = data_IP["loc"]
+            city         = data_IP["city"]
+            country      = data_IP["country"]
+            region       = data_IP["region"]
             if IP not in whitelist_IPs + whitelist_Tor:
                 notify(
                     text    = "WARNING: IP not identified as AirVPN or Tor",
@@ -91,19 +99,22 @@ def main():
                     country:      {country}
                     region:       {region}
                     """.format(
-                        IP              = IP              if IP           else "unknown",
-                        organisation    = organisation    if organisation else "unknown",
-                        hostname        = hostname        if hostname     else "unknown",
-                        coordinates     = coordinates     if coordinates  else "unknown",
-                        city            = city            if city         else "unknown",
-                        country         = country         if country      else "unknown",
-                        region          = region          if region       else "unknown"
+                        IP           = IP           if IP           else "unknown",
+                        organisation = organisation if organisation else "unknown",
+                        hostname     = hostname     if hostname     else "unknown",
+                        coordinates  = coordinates  if coordinates  else "unknown",
+                        city         = city         if city         else "unknown",
+                        country      = country      if country      else "unknown",
+                        region       = region       if region       else "unknown"
                     )
                 )
                 print(chr(27) + "[2J")
                 print(text)
         except:
             notify(text = "WARNING: error observing IP, unable to identify as secure")
+        if restart_regularly and clock_restart.time() >= 500:
+            print("regular restart procedure engaged")
+            restart()
         time.sleep(interval)
 
 def notify(
@@ -157,6 +168,10 @@ def engage_command(
     else:
         return None
 
+def restart():
+    import __main__
+    os.execv(__main__.__file__, sys.argv)
+
 countries_SIGINT = [
     "AU", "Australia",
     "BE", "Belgium",
@@ -175,7 +190,10 @@ countries_SIGINT = [
 ]
 IPs_AirVPN_2018_10_11 = [
     "109.202.107.10",
-    "213.152.161.181"
+    "213.152.161.69",
+    "213.152.161.181",
+    "213.152.161.244",
+    "213.152.162.99"
 ]
 IPs_AirVPN_2017_02_21 = [
     "185.9.19.106",
