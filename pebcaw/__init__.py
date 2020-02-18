@@ -42,7 +42,7 @@ options:
     --warn_SIGINT_country       warn if IP in SIGINT country
     --display                   display IP details continuously
     --restart_regularly         restart program regularly
-    --countries_whitelist=TEXT  comma-separated whitelist of two-letter country codes
+    --countries_whitelist=TEXT  comma-separated whitelist of two-letter country codes (e.g. CH)
 """
 
 import docopt
